@@ -1,6 +1,9 @@
-# Deprecation notice
+# My changes
 
-This Action is deprecated. The action keeps working even after archiving this repo. So __existing workflows are not impacted and new workflows also work fine__. Any further enhancement or support is not planned for this action.
+- It now uses Node v16 instead of Node v12.
+- Uprade all packages to the latest versions (whenever possible).
+- Fixes messy `.gitignore`.
+- Bundles `node_modules` used in action by NCC.
 
 # GitHub Action for substituting variables in parameterized files ![.github/workflows/ci.yml](https://github.com/microsoft/variable-substitution/workflows/.github/workflows/ci.yml/badge.svg?branch=master)
 
