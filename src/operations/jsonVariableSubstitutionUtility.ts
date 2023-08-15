@@ -6,14 +6,19 @@ export class JsonSubstitution {
     constructor() {
         this.envTreeUtil = new EnvTreeUtility();
     }
-    
+
     substituteJsonVariable(jsonObject, envObject) {
         let isValueChanged: boolean = false;
         for(let jsonChild in jsonObject) {
+            console.log(`jsonChild is ${jsonChild}`);
+
             let jsonChildArray = jsonChild.split('.');
             let resultNode = this.envTreeUtil.checkEnvTreePath(jsonChildArray, 0, jsonChildArray.length, envObject);
             if(resultNode != undefined) {
                 if(resultNode.isEnd) {
+                    console.log(`jsonObject[jsonChild] is ${jsonObject[jsonChild]}`);
+                    console.log(`and its type is ${typeof(jsonObject[jsonChild])}`);
+
                     switch(typeof(jsonObject[jsonChild])) {
                         case 'number':
                             console.log('SubstitutingValueonKeyWithNumber', jsonChild , resultNode.value);

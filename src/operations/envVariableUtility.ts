@@ -12,6 +12,8 @@ export function getVariableMap() {
     let variableMap = new Map();
     let variables = process.env;
     Object.keys(variables).forEach(key => {
+        console.log(`key: ${key}`);
+
         if(!isPredefinedVariable(key)) {
             variableMap.set(key, variables[key]);
         }

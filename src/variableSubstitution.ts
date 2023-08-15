@@ -21,7 +21,7 @@ export class VariableSubstitution {
             throw Error('File Tranformation is not enabled. Please provide JSON/XML or YAML target files for variable substitution.');
         }
     }
-    
+
     segregateFilesAndSubstitute(files: string[]) {
         let isSubstitutionApplied: boolean = false;
         for(let file of files){
@@ -52,7 +52,7 @@ export class VariableSubstitution {
                     isSubstitutionApplied = isJsonSubstitutionApplied || isSubstitutionApplied;
                 }
                 else if(this.isXml(file, fileContent)) {
-                    console.log("Applying variable substitution on XML file: " + file);   
+                    console.log("Applying variable substitution on XML file: " + file);
                     let xmlDomUtilityInstance: XmlDomUtility = this.fileContentCache.get(file);
                     let xmlSubstitution = new XmlSubstitution(xmlDomUtilityInstance);
                     let isXmlSubstitutionApplied = xmlSubstitution.substituteXmlVariables();
@@ -71,7 +71,7 @@ export class VariableSubstitution {
                         console.log('Skipped updating file: ' + file);
                     }
                     isSubstitutionApplied = isXmlSubstitutionApplied || isSubstitutionApplied;
-                }                
+                }
                 else if(this.isYaml(file, fileContent)) {
                     console.log("Applying variable substitution on YAML file: " + file);
                     let jsonSubsitution =  new JsonSubstitution();
@@ -91,12 +91,12 @@ export class VariableSubstitution {
                 }
             }
         }
-    
+
         if(!isSubstitutionApplied) {
             throw new Error("Failed to apply variable substitution");
         }
     }
-    
+
     private isJson(file: string, content: string): boolean {
         try {
             content = this.stripJsonComments(content);
@@ -111,7 +111,7 @@ export class VariableSubstitution {
             return false;
         }
     }
-    
+
     private isYaml(file: string, content: string) : boolean {
         try {
             let yamlObject = yaml.safeLoad(content);
@@ -125,7 +125,7 @@ export class VariableSubstitution {
             return false;
         }
     }
-    
+
     private isXml(file: string, content: string): boolean {
         try{
             let ltxDomUtiltiyInstance = new XmlDomUtility(content);
@@ -139,12 +139,12 @@ export class VariableSubstitution {
             return false;
         }
     }
-    
+
     private stripJsonComments(content) {
         if (!content || (content.indexOf("//") < 0 && content.indexOf("/*") < 0)) {
             return content;
         }
-    
+
         var currentChar;
         var nextChar;
         var insideQuotes = false;
@@ -152,24 +152,24 @@ export class VariableSubstitution {
         var insideComment = 0;
         var singlelineComment = 1;
         var multilineComment = 2;
-    
+
         for (var i = 0; i < content.length; i++) {
             currentChar = content[i];
             nextChar = i + 1 < content.length ? content[i + 1] : "";
-    
+
             if (insideComment) {
                 if (insideComment == singlelineComment && (currentChar + nextChar === '\r\n' || currentChar === '\n')) {
                     i--;
                     insideComment = 0;
                     continue;
                 }
-    
+
                 if (insideComment == multilineComment && currentChar + nextChar === '*/') {
                     i++;
                     insideComment = 0;
                     continue;
                 }
-    
+
             } else {
                 if (insideQuotes && currentChar == "\\") {
                     contentWithoutComments += currentChar + nextChar;
@@ -180,13 +180,13 @@ export class VariableSubstitution {
                     if (currentChar == '"') {
                         insideQuotes = !insideQuotes;
                     }
-    
+
                     if (!insideQuotes) {
                         if (currentChar + nextChar === '//') {
                             insideComment = singlelineComment;
                             i++;
                         }
-    
+
                         if (currentChar + nextChar === '/*') {
                             insideComment = multilineComment;
                             i++;
@@ -194,34 +194,34 @@ export class VariableSubstitution {
                     }
                 }
             }
-    
+
             if (!insideComment) {
                 contentWithoutComments += content[i];
             }
         }
-    
+
         return contentWithoutComments;
     }
-    
+
     private replaceEscapeXMLCharacters(xmlDOMNode) {
         if(!xmlDOMNode || typeof xmlDOMNode == 'string') {
             return;
         }
-    
+
         for(var xmlAttribute in xmlDOMNode.attrs) {
             xmlDOMNode.attrs[xmlAttribute] = xmlDOMNode.attrs[xmlAttribute].replace(/'/g, "APOS_CHARACTER_TOKEN");
         }
-    
+
         for(var xmlChild of xmlDOMNode.children) {
             this.replaceEscapeXMLCharacters(xmlChild);
         }
-    }    
-    
+    }
+
     private fileContentCache = new Map<String, any>();
     private parseException: string = "";
 }
 
 let varSub = new VariableSubstitution();
-varSub.run().catch((error) => {	
-    core.setFailed(error);	
+varSub.run().catch((error) => {
+    core.setFailed(error);
 });
